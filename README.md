@@ -1,57 +1,67 @@
-# NewChain节点部署
+# NewChain部署文档
 
-## 1. 服务器环境要求
+* [NewChain主网部署文档](NewChainMainnetDeploy.md)
 
-### 1.1 最小配置
-  - 操作系统： 64-bit Linux/Ubuntu
-  - 处理器： Intel Core i5–760 or AMD FX-8100 or better
-  - 内存： 4GB
-  - 存储： 50 GB可用空间
-  - 网络： 有公网IP
+# NewChain发布说明
 
-### 1.2 推荐配置
-  - 操作系统： Ubuntu 18.04 x86_64
-  - 处理器： Intel Core i7–4770 or AMD FX-8310 or better， 8GB
-  - 内存： 32 GB
-  - 存储： 200 GB可用空间
-  - 网络： 有公网IP
+## 发布目录结构
 
-参考 AWS m5.2xlarge 或更高规则配置。
+NewChain发布包在服务器目录 https://release.cloud.diynova.com/newton/newchain-deploy/{mainnet,testnet}/ 下，
+mainnet该目录结构如下：
 
-## 2. 安装部署
+Index of /newton/newchain/newchain-deploy/mainnet/
+.
+├── latest
+├── newchain-mainnet-<version>.tar.gz
+├── newchain-mainnet-<version>.tar.gz.sha256
+└── newchain.sh
 
-### 2.1 创建工作目录并输入
+其中，
+* latest包含当前最新版本号，例如 v1.8.26，v1.8.26-1.0，newton-v1.8.26-1.0
+* newchain-mainnet-<version>.tar.gz 里的 version 为 latest 文件的内容
+* newchain.sh 自动化部署脚本
 
-```
-mkdir -p newchain && cd newchain
-```
+## 只读节点发布步骤
 
-### 2.2 从Github获取安装脚本程序`newchain.sh`并运行
+1. 更新mainnet里文件
 
-```
-curl -L http://47.75.82.30/releases/newchain.sh | sudo bash
-```
+mainnet目录结构如下：
 
-### 2.3 查看NewChain服务日志
-```
-sudo supervisorctl tail -f newchain stderr
-```
+mainnet/
+├── bin
+│   └── geth
+├── conf
+│   └── node.toml
+├── share
+│   └── newchainmain.json
+└── supervisor
+    └── newchain.conf
 
-## 3. 使用NewChain服务
+如有需要，更改对应文件
 
-- NewChain对外服务端口为 8545 端口，HTTP协议，可以作为RPC接口在NewChain SDK中使用。
+2. 创建压缩包
 
-## 4. 运维相关操作
+以当前最新版本号为例：newton-1.8.26-1.1
 
-- 启动服务：
-
-```
-sudo supervisorctl start newchain
+```bash
+tar czvf newchain-mainnet-newton-1.8.26-1.1.tar.gz mainnet/
 ```
 
-- 停止服务：
+3. 获取shasum值
 
+```bash
+shasum -a 256 newchain-mainnet-newton-1.8.26-1.1.tar.gz > newchain-mainnet-newton-1.8.26-1.1.tar.gz.sha256
 ```
-sudo supervisorctl stop newchain
-```
+
+4. 复制文件
+
+复制 `newchain-mainnet-newton-1.8.26-1.1.tar.gz` 和 `newchain-mainnet-newton-1.8.26-1.1.tar.gz.sha256`
+到发布服务 https://release.cloud.diynova.com/newton/newchain-deploy/mainnet 对应的目录下
+
+5. 更新latet
+
+更新 https://release.cloud.diynova.com/newton/newchain-deploy/mainnet/latest 对应的文件内容为最新版本 newton-1.8.26-1.1
+
+
+
 
