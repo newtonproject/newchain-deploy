@@ -9,12 +9,14 @@
 NewChain发布包在服务器目录 https://release.cloud.diynova.com/newton/newchain-deploy/{mainnet,testnet}/ 下，
 mainnet该目录结构如下：
 
+```
 Index of /newton/newchain/newchain-deploy/mainnet/
 .
 ├── latest
 ├── newchain-mainnet-<version>.tar.gz
 ├── newchain-mainnet-<version>.tar.gz.sha256
 └── newchain.sh
+```
 
 其中，
 * latest包含当前最新版本号，例如 v1.8.26，v1.8.26-1.0，newton-v1.8.26-1.0
@@ -27,6 +29,7 @@ Index of /newton/newchain/newchain-deploy/mainnet/
 
 mainnet目录结构如下：
 
+```
 mainnet/
 ├── bin
 │   └── geth
@@ -36,6 +39,7 @@ mainnet/
 │   └── newchainmain.json
 └── supervisor
     └── newchain.conf
+```
 
 如有需要，更改对应文件
 
