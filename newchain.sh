@@ -169,16 +169,18 @@ cp /data/newchain/mainnet/supervisor/newchain.conf /etc/supervisor/conf.d/ || {
   exit 1
 }
 
-supervisorctl update || {
-  color "31" "Failed to exec supervisorctl update."
-  exit 1
-}
-
 # check running
 if [ "$(supervisorctl status | grep newchain | awk '{print $2}')" == "RUNNING" ]; then
+  supervisorctl update || {
+    color "31" "Failed to exec supervisorctl update."
+    exit 1
+  }
   supervisorctl restart newchain
 else
-  supervisorctl start newchain
+  supervisorctl update || {
+    color "31" "Failed to exec supervisorctl update."
+    exit 1
+  }
 fi
 
 LOGO=$(
