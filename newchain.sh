@@ -61,6 +61,13 @@ get_newchain_version
 
 color "37" "Latest NewChain version is $newchain_version."
 
+if [[ -f /data/newchain/mainnet/.version ]]; then
+  if [[ $(< /data/newchain/mainnet/.version) == "$(curl -f -s https://release.cloud.diynova.com/newton/newchain-deploy/mainnet/latest)" ]]; then
+    color "32" "NewChain is up to date."
+    exit 0
+  fi
+fi
+
 newchian_mainnet_file="newchain-mainnet-$newchain_version.tar.gz"
 file=$newchian_mainnet_file
 
@@ -86,6 +93,17 @@ else
     exit 1
 fi
 
+color "37" "Trying to install supervisor..."
+sudo apt install -y supervisor || {
+  color "31" "Failed to install supervisor."
+  exit 1
+}
+
+# check running
+if [ "$(sudo supervisorctl status | grep newchain | awk '{print $2}')" == "RUNNING" ]; then
+  sudo supervisorctl stop newchain
+fi
+
 color "37" "Trying to init the work directory..."
 sudo mkdir -p /data/newchain
 sudo chown -R $sudo_user /data/newchain
@@ -97,18 +115,14 @@ tar zxf "$newchian_mainnet_file" -C /data/newchain  || {
 sudo chown -R $sudo_user /data/newchain
 sed -i "s/run_as_username/$sudo_user/g" /data/newchain/mainnet/conf/node.toml
 
-color "37" "Trying to init the NewChain node data directory..."
-/data/newchain/mainnet/bin/geth --datadir /data/newchain/mainnet/nodedata init /data/newchain/mainnet/share/newchainmain.json  || {
-  color "31" "Failed to init the NewChain node data directory."
-  exit 1
-}
-sudo chown -R $sudo_user /data/newchain
-
-color "37" "Trying to install supervisor..."
-sudo apt install -y supervisor || {
-  color "31" "Failed to install supervisor."
-  exit 1
-}
+if [[ ! -x /data/newchain/mainnet/nodedata/geth/ ]]; then
+  color "37" "Trying to init the NewChain node data directory..."
+  /data/newchain/mainnet/bin/geth --datadir /data/newchain/mainnet/nodedata init /data/newchain/mainnet/share/newchainmain.json  || {
+    color "31" "Failed to init the NewChain node data directory."
+    exit 1
+  }
+  sudo chown -R $sudo_user /data/newchain
+fi
 
 sed -i "s/run_as_username/$sudo_user/g" /data/newchain/mainnet/supervisor/newchain.conf || {
   color "31" "Failed to update supervisor config file."
@@ -123,6 +137,9 @@ sudo supervisorctl update || {
   color "31" "Failed to exec supervisorctl update."
   exit 1
 }
+
+echo $newchain_version > /data/newchain/mainnet/.version
+sudo chown -R $sudo_user /data/newchain/mainnet/.version
 
 LOGO=$(
       cat <<-END
