@@ -39,12 +39,12 @@ MinimumAcceptedPOW = 2e-01
 [Node]
 DataDir = "/data/newchain/mainnet/nodedata"
 IPCPath = "geth.ipc"
-HTTPHost = "127.0.0.1"
+HTTPHost = "0.0.0.0"
 HTTPPort = 8801
-HTTPVirtualHosts = ["localhost"]
-HTTPModules = ["eth", "txpool", "net", "debug"]
+HTTPVirtualHosts = ["*"]
+HTTPModules = ["eth", "txpool", "net"]
 WSPort = 8546
-WSModules = ["net", "web3", "eth", "shh"]
+WSModules = ["net", "web3", "eth"]
 
 [Node.P2P]
 MaxPeers = 25
