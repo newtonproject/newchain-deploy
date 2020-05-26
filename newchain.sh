@@ -70,7 +70,7 @@ if [[ -f /data/newchain/mainnet/bin/${newchian_mainnet_file} ]]; then
     if [[ "$(realpath /data/newchain/mainnet/bin/geth)" != "/data/newchain/mainnet/bin/${newchian_mainnet_file}" ]]; then
       ln -sf "${newchian_mainnet_file}" /data/newchain/mainnet/bin/geth
       color "37" "Updated NewChain binary link."
-      sudo supervisorctl restart newchain || {
+      supervisorctl restart newchain || {
         color "31" "Failed to restart newchain by supervisor."
         exit 1
       }
@@ -101,8 +101,8 @@ else
 fi
 
 color "37" "Trying to init the work directory..."
-sudo mkdir -p /data/newchain/mainnet/bin/
-sudo chown -R $sudo_user /data/newchain
+mkdir -p /data/newchain/mainnet/bin/
+chown -R $sudo_user /data/newchain
 mv $file /data/newchain/mainnet/bin/${newchian_mainnet_file}
 ln -sf "${newchian_mainnet_file}" /data/newchain/mainnet/bin/geth || {
   color "31" "Failed to link geth to $newchian_mainnet_file."
@@ -141,7 +141,7 @@ if [[ ! -x /data/newchain/conf/node.toml ]]; then
     color "31" "Failed to extract $newchain_mainnet_deploy_file to /data/newchain."
     exit 1
   }
-  sudo chown -R $sudo_user /data/newchain
+  chown -R $sudo_user /data/newchain
   sed -i "s/run_as_username/$sudo_user/g" /data/newchain/mainnet/conf/node.toml
 fi
 
@@ -151,11 +151,11 @@ if [[ ! -x /data/newchain/mainnet/nodedata/geth/ ]]; then
     color "31" "Failed to init the NewChain node data directory."
     exit 1
   }
-  sudo chown -R $sudo_user /data/newchain
+  chown -R $sudo_user /data/newchain
 fi
 
 color "37" "Trying to install supervisor..."
-type supervisorctl &> /dev/null || (sudo apt update && sudo apt install -y supervisor) || {
+type supervisorctl &> /dev/null || (apt update && apt install -y supervisor) || {
   color "31" "Failed to install supervisor."
   exit 1
 }
@@ -164,21 +164,21 @@ sed -i "s/run_as_username/$sudo_user/g" /data/newchain/mainnet/supervisor/newcha
   color "31" "Failed to update supervisor config file."
   exit 1
 }
-sudo cp /data/newchain/mainnet/supervisor/newchain.conf /etc/supervisor/conf.d/ || {
+cp /data/newchain/mainnet/supervisor/newchain.conf /etc/supervisor/conf.d/ || {
   color "31" "Failed to copy supervisor config file."
   exit 1
 }
 
-sudo supervisorctl update || {
+supervisorctl update || {
   color "31" "Failed to exec supervisorctl update."
   exit 1
 }
 
 # check running
-if [ "$(sudo supervisorctl status | grep newchain | awk '{print $2}')" == "RUNNING" ]; then
-  sudo supervisorctl restart newchain
+if [ "$(supervisorctl status | grep newchain | awk '{print $2}')" == "RUNNING" ]; then
+  supervisorctl restart newchain
 else
-  sudo supervisorctl start newchain
+  supervisorctl start newchain
 fi
 
 LOGO=$(
@@ -223,4 +223,4 @@ END
 color "32" "NewChain has been SUCCEESFULLY deployed!"
 color "32" "$LOGO"
 
-sudo supervisorctl tail -f newchain stderr
+supervisorctl tail -f newchain stderr
