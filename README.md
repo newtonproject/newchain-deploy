@@ -1,98 +1,54 @@
-# NewChain部署文档
+# NewChain只读节点部署方法
 
-* [NewChain主网部署文档](NewChainMainnetDeploy.md)
+## 1. 服务器环境要求
 
-# NewChain发布说明
+### 1.1 最小配置
+  - 操作系统：Ubuntu 18.04 LTS 64位 或 Ubuntu 16.04 LTS 64位
+  - 处理器： 2核心 CPU
+  - 内存： 8GB
+  - 存储： 100 GB可用存储空间
+  - 网络： 公网IP
 
-## 发布目录结构
+服务器配置可参考 AWS m5a.large 或 阿里云 ecs.t5
 
-NewChain发布包在服务器目录 https://release.cloud.diynova.com/newton/newchain-deploy/{mainnet,testnet}/ 下，
-其中，https://release.cloud.diynova.com/newton/ 目录结构如下：
+### 1.2 系统配置
+  - 系统数据盘挂载： /data 目录为系统数据盘的挂载点
+  - 防火墙： 防火墙需要打开 UDP 和 TCP 的 38311 端口 以及 TCP 的 8801 端口
 
-```
-Index of /newton/
+## 2. 安装部署
 
-.
-├── newchain
-│   ├── latest
-│   ├── newton-1.8.26-1.1
-│   │   └── linux
-│   │       ├── geth
-│   │       └── geth.sha256
-│   └── tag_name
-│       └── linux
-│           ├── geth
-│           └── geth.sha256
-└── newchain-deploy
-    └── mainnet
-        ├── newchain-mainnet-v1.0.tar.gz
-        ├── newchain-mainnet-v1.0.tar.gz.sha256
-        ├── newchain.sh -> newchain-v1.0.sh
-        └── newchain-v1.0.sh
-```
-
-其中，
-* /newton/newchain/latest
-  * 内容为 NewChain 最新版本号
-  * 一般为 [newchain 仓库的tag名](https://gitlab.newtonproject.org/mengguang/newchain/tags)，例如 newton-v1.8.26-1.0， newton-1.8.26-1.1
-  * 需要保证文件 /newton/newchain/tagName/linux/geth 和 /newton/newchain/tagName/linux/geth.sha256 在发布服务上
-* /newton/newchain-deploy/mainnet/newchain.sh
-  * NewChain主网自动化部署脚本
-  * 第9行包含最新版本号
-
-## 只读节点发布步骤
-
-### 1. 更新mainnet里文件
-
-mainnet目录结构如下：
+### 2.1 创建工作目录并输入
 
 ```
-mainnet/
-├── conf
-│   └── node.toml
-├── share
-│   └── newchainmain.json
-└── supervisor
-    └── newchain.conf
+mkdir -p newchain && cd newchain
 ```
 
-### 2. 创建压缩包
+### 2.2 获取安装脚本程序`newchain.sh`并运行
 
-以当前最新版本号为例：v1.0
-
-```bash
-tar czvf newchain-mainnet-v1.0.tar.gz mainnet/
+```
+curl -L https://release.cloud.diynova.com/newton/newchain-deploy/mainnet/newchain.sh | sudo bash
 ```
 
-### 3. 获取shasum值
-
-```bash
-shasum -a 256 newchain-mainnet-v1.0.tar.gz > newchain-mainnet-v1.0.tar.gz.sha256
+### 2.3 查看NewChain服务日志
+```
+sudo supervisorctl tail -f newchain stderr
 ```
 
-### 4. 复制 tar.gz 文件
+## 3. 使用NewChain服务
 
-* 复制 `newchain-mainnet-v1.0.tar.gz` 和 `newchain-mainnet-v1.0.tar.gz.sha256` 到发布服务器 /newton/newchain-deploy/mainnet 目录下
+- NewChain对外服务端口为 8801 端口，HTTP协议，可以作为RPC接口在NewChain SDK中使用。
 
-### 5. 复制 newchain.sh 文件
+## 4. 运维相关操作
 
-* 复制 `newchain.sh` 到发布服务器 /newton/newchain-deploy/mainnet 目录下，或者命名为 `newchain-v1.0.sh` 后软连接到 `newchain.sh`
-* 更新 `nwechain.sh` 文件里第9行 `newchain_deploy_latest_version`值为最新版本号，例如： v1.0
+- 启动服务：
 
-## 附1： NewChain 升级方法
-
-### 1. 更新newchain二进制程序
-
-基于 [newchain tag](https://gitlab.newtonproject.org/mengguang/newchain/tags) 发布最新版本的二进制程序到目录 /neton/newchain/latestTagName/linux 下
-
-### 2. 更新二进制的shasum
-
-```bash
-shasum -a 256 geth > geth.sha256
+```
+sudo supervisorctl start newchain
 ```
 
-### 3. 更新latest文件
+- 停止服务：
 
-更新 /newton/newchain/latest 里的 newchain 最新版本号为新发布的tag latestTagName
-
+```
+sudo supervisorctl stop newchain
+```
 
