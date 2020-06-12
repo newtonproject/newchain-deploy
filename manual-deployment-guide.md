@@ -1,5 +1,6 @@
 # Manually setup a NewChain read-only node WITHOUT root privilege
-# 无需root权限手工运行NewChain只读节点
+
+**无需root权限手工运行NewChain只读节点**
 
 The original tutorial requires sudo privilege to install and run a newchain read-only node.
 
