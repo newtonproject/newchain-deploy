@@ -41,14 +41,12 @@ Done. You now have build/bin/geth.
 ## Install geth to /usr/local/bin
 
 ```
-$ cp ~/git/newchain/build/bin/geth /usr/local/bin/
+$ sudo cp ~/git/newchain/build/bin/geth /usr/local/bin/
 ```
 
 ## Prepare the data folder
 
-Mount the data partition to, for example, /data/
-
-Create a data folder:
+Mount the data partition to, for example, /data/, then create a sub-folder within it:
 
 ```
 $ mkdir /data/newchain
@@ -110,7 +108,7 @@ Notice that two folders are created: geth/ and keystore/
 
 ## Run a newchain read-only node
 
-Create a config file ~/.newchain/mainnet/config.toml:
+Create a config file ~/.newchain/mainnet/config.toml (replace {USERNAME} below with your login name):
 
 ```
 [Eth]
@@ -126,7 +124,7 @@ EnablePreimageRecording = false
 CacheDir = "ethash"
 CachesInMem = 2
 CachesOnDisk = 3
-DatasetDir = "/home/evan/.newchain/.ethash"
+DatasetDir = "/home/{USERNAME}/.newchain/.ethash"
 DatasetsInMem = 1
 DatasetsOnDisk = 2
 PowMode = 0
@@ -152,7 +150,7 @@ MaxMessageSize = 1048576
 MinimumAcceptedPOW = 2e-01
 
 [Node]
-DataDir = "/home/evan/.newchain/mainnet"
+DataDir = "/home/{USERNAME}/.newchain/mainnet"
 IPCPath = "/tmp/geth.ipc"
 HTTPHost = "127.0.0.1"
 HTTPPort = 8801
