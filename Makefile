@@ -1,7 +1,37 @@
-Version=`git describe --abbrev=0 --tags || git rev-parse --short HEAD || date +%Y%m%d%H%M%S`
+gittagname := $(shell git describe --abbrev=0 --tags)
+gitcommit := $(shell  git rev-parse --short HEAD)
+versiondate := $(shell date +%Y%m%d%H%M%S)
 
-all:
-	tar czvf newchain-mainnet-${Version}.tar.gz mainnet
-	shasum -a 256 newchain-mainnet-${Version}.tar.gz > newchain-mainnet-${Version}.tar.gz.sha256
-	sed  -i "s/newchain_deploy_latest_version=.*/newchain_deploy_latest_version='${Version}'/" newchain.sh
+ifeq  ($(gittagname),)
+else
+VERSION := $(if $(VERSION),$(VERSION),$(gittagname))
+endif
+ifeq ($(gitcommit),)
+else
+VERSION := $(if $(VERSION),$(VERSION)-$(gitcommit),$(gitcommit))
+endif
+ifeq ($(versiondate),)
+else
+VERSION := $(if $(VERSION),$(VERSION),$(versiondate))
+endif
 
+
+all:	main test
+	@echo "${VERSION}: copy files under './build' to release server."
+
+main:
+	echo ${VERSION}
+	bash build.sh ${VERSION} "mainnet"
+	@echo "Done mainnet building."
+	@echo "${VERSION}: copy files under './build/mainnet' to mainnet release server."
+
+test:
+	bash build.sh ${VERSION} "testnet"
+	@echo "Done testnet building."
+	@echo "${VERSION}: copy files under './build/testnet' to testnet release server."
+
+clean:
+	rm -rf build/
+
+check:
+	@[ "${VERSION}" ] && echo "VERSION is $(VERSION)" || ( echo "VERSION is not set"; exit 1 )

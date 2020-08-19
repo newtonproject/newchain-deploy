@@ -25,11 +25,20 @@ mkdir -p newchain && cd newchain
 
 ### 2.2 获取安装脚本程序`newchain.sh`并运行
 
+主网:
+
 ```
 curl -L https://release.cloud.diynova.com/newton/newchain-deploy/mainnet/newchain.sh | sudo bash
 ```
 
+测试网:
+
+```
+curl -L https://release.cloud.diynova.com/newton/newchain-deploy/testnet/newchain.sh | sudo bash
+```
+
 ### 2.3 查看NewChain服务日志
+
 ```
 sudo supervisorctl tail -f newchain stderr
 ```

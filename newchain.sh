@@ -6,7 +6,8 @@ set -eu
 # Use USE_NEWCHAIN_VERSION to specify a specific release version.
 #   Example: USE_NEWCHAIN_VERSION=v1.8.26 ./newchain.sh
 
-newchain_deploy_latest_version='v1.0'
+newchain_deploy_latest_version='c03125d'
+default_networkname='mainnet'
 
 function color() {
     # Usage: color "31;5" "string"
@@ -48,6 +49,21 @@ fi
 
 color "33" "Current sudo user is $sudo_user"
 
+if [[ "$*" == "" ]]; then
+  networkname="${default_networkname}"
+elif [[ "$*" == "mainnet" || "$*" == "main" ]]; then
+  networkname="mainnet"
+elif [[ "$*" == "testnet" || "$*" == "test" ]]; then
+  networkname="testnet"
+else
+  color "31" "Not support network $*."
+  exit 1
+fi
+color "32" "Current NewChain network is ${networkname}"
+
+
+download_rooturl="https://release.cloud.diynova.com"
+
 function get_newchain_version() {
     if [[ -n ${USE_NEWCHAIN_VERSION:-} ]]; then
         readonly reason="specified in \$USE_NEWCHAIN_VERSION"
@@ -55,20 +71,27 @@ function get_newchain_version() {
     else
         # Find the latest NewChain version available for download.
         readonly reason="automatically selected latest available version"
-        newchain_version=$(curl -f -s https://release.cloud.diynova.com/newton/newchain/latest.txt) || (color "31" "Get NewChain latest version error." && exit 1)
+        newchain_version_url="${download_rooturl}/newton/newchain/latest.txt"
+        if [[ "$networkname" == "testnet" ]]; then
+          newchain_version_url="${download_rooturl}/newton/newchain/latest-testnet.txt"
+        fi
+        color '' "Trying get newchain version from url $newchain_version_url"
+        newchain_version=$(curl -f -s "${newchain_version_url}") || (color "31" "Get NewChain latest version error." && exit 1)
         readonly newchain_version
     fi
 }
 
+
+
 get_newchain_version
 color "37" "Latest NewChain version is $newchain_version."
 
-newchian_mainnet_file="geth.${newchain_version}"
+newchian_network_file="geth.${newchain_version}"
 
-if [[ -f /data/newchain/mainnet/bin/${newchian_mainnet_file} ]]; then
+if [[ -f /data/newchain/${networkname}/bin/${newchian_network_file} ]]; then
     color "32" "NewChain is up to date."
-    if [[ "$(realpath /data/newchain/mainnet/bin/geth)" != "/data/newchain/mainnet/bin/${newchian_mainnet_file}" ]]; then
-      ln -sf "${newchian_mainnet_file}" /data/newchain/mainnet/bin/geth
+    if [[ "$(realpath /data/newchain/${networkname}/bin/geth)" != "/data/newchain/${networkname}/bin/${newchian_network_file}" ]]; then
+      ln -sf "${newchian_network_file}" /data/newchain/${networkname}/bin/geth
       color "37" "Updated NewChain binary link."
       supervisorctl restart newchain || {
         color "31" "Failed to restart newchain by supervisor."
@@ -80,74 +103,87 @@ if [[ -f /data/newchain/mainnet/bin/${newchian_mainnet_file} ]]; then
 fi
 
 file="geth"
-color "34" "Downloading NewChain binary@${newchain_version} to ${file} (${reason})"
-color "33" "https://release.cloud.diynova.com/newton/newchain-deploy/mainnet/${file}"
-curl -L "https://release.cloud.diynova.com/newton/newchain/${newchain_version}/${system}/${file}" -o $file || {
-  color "31" "Failed to download the NewChain binary."
-  exit 1
+function download_geth_bin() {
+  color "34" "Downloading NewChain binary@${newchain_version} to ${file} (${reason})"
+  color "33" "${download_rooturl}/newton/newchain/${newchain_version}/${system}/${file}"
+  curl -L "${download_rooturl}/newton/newchain/${newchain_version}/${system}/${file}" -o $file || {
+    color "31" "Failed to download the NewChain binary."
+    exit 1
+  }
 }
-curl --silent -L "https://release.cloud.diynova.com/newton/newchain/${newchain_version}/${system}/${file}.sha256" -o "${file}.sha256"
-#curl --silent -L "https://release.cloud.diynova.com/newton/newchain/${newchain_version}/${system}/${file}.sig" -o "${file}.sig"
-chmod +x $file
+
+curl --silent -L "${download_rooturl}/newton/newchain/${newchain_version}/${system}/${file}.sha256" -o "${file}.sha256"
+#curl --silent -L "${download_rooturl}/newton/newchain/${newchain_version}/${system}/${file}.sig" -o "${file}.sig"
+# TODO: add gpg
+if test -f "$file"; then
+  sha256sum_res=$(shasum -a 256 -c "${file}.sha256" | awk '{print $2}')
+  if [ "$sha256sum_res" == "OK" ]; then
+      color "32" "Verify $file $sha256sum_res, checksum match."
+  else
+    download_geth_bin
+  fi
+else
+  download_geth_bin
+fi
 
 color "37" "Trying to verify the downloaded NewChain binary file..."
-# TODO: add gpg
 sha256sum_res=$(shasum -a 256 -c "${file}.sha256" | awk '{print $2}')
 if [ "$sha256sum_res" == "OK" ]; then
-    color "32" "Verify $file $sha256sum_res, checksum match."
+  color "32" "Verify $file $sha256sum_res, checksum match."
 else
-    color "41" "Verify $file $sha256sum_res, checksum did NOT match."
-    exit 1
+  color "41" "Verify $file $sha256sum_res, checksum did NOT match."
+  exit 1
 fi
 
 color "37" "Trying to init the work directory..."
-mkdir -p /data/newchain/mainnet/bin/
+mkdir -p /data/newchain/${networkname}/bin/
 chown -R $sudo_user /data/newchain
-mv $file /data/newchain/mainnet/bin/${newchian_mainnet_file}
-ln -sf "${newchian_mainnet_file}" /data/newchain/mainnet/bin/geth || {
-  color "31" "Failed to link geth to $newchian_mainnet_file."
+chmod +x $file
+cp $file /data/newchain/${networkname}/bin/${newchian_network_file}
+ln -sf "${newchian_network_file}" /data/newchain/${networkname}/bin/geth || {
+  color "31" "Failed to link geth to $newchian_network_file."
   exit 1
 }
 color "37" "Updated NewChain binary link."
 
 # NewChain Deploy file
 if [[ ! -x /data/newchain/conf/node.toml ]]; then
-  newchain_mainnet_deploy_file="newchain-mainnet-$newchain_deploy_latest_version.tar.gz"
+  newchain_network_deploy_file="newchain-${networkname}-$newchain_deploy_latest_version.tar.gz"
 
-  if [[ ! -x $newchain_mainnet_deploy_file ]]; then
-      color "34" "Downloading NewChain installation package@${newchain_mainnet_deploy_file} to ${newchain_mainnet_deploy_file}"
-      color "33" "https://release.cloud.diynova.com/newton/newchain-deploy/mainnet/${newchain_mainnet_deploy_file}"
-      curl -L "https://release.cloud.diynova.com/newton/newchain-deploy/mainnet/${newchain_mainnet_deploy_file}" -o $newchain_mainnet_deploy_file || {
+  if [[ ! -x $newchain_network_deploy_file ]]; then
+      color "34" "Downloading NewChain installation package@${newchain_network_deploy_file} to ${newchain_network_deploy_file}"
+      color "33" "${download_rooturl}/newton/newchain-deploy/${networkname}/${newchain_network_deploy_file}"
+      curl -L "${download_rooturl}/newton/newchain-deploy/${networkname}/${newchain_network_deploy_file}" -o $newchain_network_deploy_file || {
         color "31" "Failed to download the NewChain installation package."
         exit 1
       }
-      curl --silent -L "https://release.cloud.diynova.com/newton/newchain-deploy/mainnet/${newchain_mainnet_deploy_file}.sha256" -o "${newchain_mainnet_deploy_file}.sha256"
-      chmod +x $newchain_mainnet_deploy_file
+      curl --silent -L "${download_rooturl}/newton/newchain-deploy/${networkname}/${newchain_network_deploy_file}.sha256" -o "${newchain_network_deploy_file}.sha256"
+      chmod +x $newchain_network_deploy_file
   else
       color "37" "NewChain installation package is up to date."
   fi
 
   color "37" "Trying to verify the downloaded installation file..."
   # TODO: add gpg
-  sha256sum_deploy_res=$(shasum -a 256 -c "${newchain_mainnet_deploy_file}.sha256" | awk '{print $2}')
+  sha256sum_deploy_res=$(shasum -a 256 -c "${newchain_network_deploy_file}.sha256" | awk '{print $2}')
   if [ "$sha256sum_deploy_res" == "OK" ]; then
-      color "32" "Verify $newchain_mainnet_deploy_file $sha256sum_deploy_res, checksum match."
+      color "32" "Verify $newchain_network_deploy_file $sha256sum_deploy_res, checksum match."
   else
-      color "41" "Verify $newchain_mainnet_deploy_file $sha256sum_deploy_res, checksum did NOT match."
+      color "41" "Verify $newchain_network_deploy_file $sha256sum_deploy_res, checksum did NOT match."
       exit 1
   fi
 
-  tar zxf "$newchain_mainnet_deploy_file" -C /data/newchain  || {
-    color "31" "Failed to extract $newchain_mainnet_deploy_file to /data/newchain."
+  tar zxf "$newchain_network_deploy_file" -C /data/newchain  || {
+    color "31" "Failed to extract $newchain_network_deploy_file to /data/newchain."
     exit 1
   }
   chown -R $sudo_user /data/newchain
-  sed -i "s/run_as_username/$sudo_user/g" /data/newchain/mainnet/conf/node.toml
+  sed -i "s/run_as_username/$sudo_user/g" /data/newchain/${networkname}/conf/node.toml
 fi
 
-if [[ ! -x /data/newchain/mainnet/nodedata/geth/ ]]; then
+if [[ ! -x /data/newchain/${networkname}/nodedata/geth/ ]]; then
   color "37" "Trying to init the NewChain node data directory..."
-  /data/newchain/mainnet/bin/geth --datadir /data/newchain/mainnet/nodedata init /data/newchain/mainnet/share/newchainmain.json  || {
+  /data/newchain/${networkname}/bin/geth --datadir /data/newchain/${networkname}/nodedata init /data/newchain/${networkname}/share/newchain${networkname}.json  || {
     color "31" "Failed to init the NewChain node data directory."
     exit 1
   }
@@ -160,11 +196,11 @@ type supervisorctl &> /dev/null || (apt update && apt install -y supervisor) || 
   exit 1
 }
 
-sed -i "s/run_as_username/$sudo_user/g" /data/newchain/mainnet/supervisor/newchain.conf || {
+sed -i "s/run_as_username/$sudo_user/g" /data/newchain/${networkname}/supervisor/newchain.conf || {
   color "31" "Failed to update supervisor config file."
   exit 1
 }
-cp /data/newchain/mainnet/supervisor/newchain.conf /etc/supervisor/conf.d/ || {
+cp /data/newchain/${networkname}/supervisor/newchain.conf /etc/supervisor/conf.d/ || {
   color "31" "Failed to copy supervisor config file."
   exit 1
 }
@@ -222,7 +258,7 @@ NNNNNNNNNNNNNNNNNNNNWN0xo:,...      ...,:ok0NWNNNNNNNNNNNNNNNNNNNN
 END
   )
 
-color "32" "NewChain has been SUCCEESFULLY deployed!"
+color "32" "NewChain ${networkname} has been SUCCESSFULLY deployed!"
 color "32" "$LOGO"
 
 supervisorctl tail -f newchain stderr
