@@ -183,7 +183,7 @@ fi
 
 if [[ ! -x /data/newchain/${networkname}/nodedata/geth/ ]]; then
   color "37" "Trying to init the NewChain node data directory..."
-  /data/newchain/${networkname}/bin/geth --datadir /data/newchain/${networkname}/nodedata init /data/newchain/${networkname}/share/newchain${networkname}.json  || {
+  /data/newchain/${networkname}/bin/geth --config /data/newchain/${networkname}/conf/node.toml --datadir /data/newchain/${networkname}/nodedata init /data/newchain/${networkname}/share/newchain${networkname}.json  || {
     color "31" "Failed to init the NewChain node data directory."
     exit 1
   }
