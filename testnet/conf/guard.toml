@@ -1,0 +1,36 @@
+Host = "0.0.0.0"
+Port = 8801
+
+rpcurl = "http://127.0.0.1:8808"
+
+# Method
+MethodWhitelist = [
+    "eth_getBalance",
+    "eth_protocolVersion",
+    "eth_gasPrice",
+    "eth_blockNumber",
+    "eth_sendRawTransaction",
+    "eth_getTransactionCount",
+    "eth_getBlockByHash",
+    "eth_getBlockByNumber",
+    "eth_getTransactionByHash",
+    "eth_getTransactionReceipt",
+    "eth_getBlockTransactionCountByNumber",
+    "eth_getTransactionByBlockNumberAndIndex",
+    "eth_getBlockTransactionCountByHash",
+    "eth_getCode",
+    "eth_estimateGas",
+    "eth_call",
+    "eth_getLogs",
+    "txpool_status",
+    "rpc_modules",
+    "net_version",
+]
+
+# GasPrice
+MinGasPriceInWei = 100000000000 # WEI
+#MaxGasPriceInWEI = 1000000000000000000 # 1NEW, max is 9223372036854775807 (int64)
+
+# Log
+# log level: panic, fatal, error, warn, info, debug
+LogLevel = "info"
