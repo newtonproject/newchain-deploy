@@ -13,6 +13,12 @@ NewChain发布包在服务器目录 https://release.cloud.diynova.com/newton/new
 Index of /newton/
 
 .
+├── NewChainGuard
+│   ├── latest.txt
+│   └── v0.8.0
+│       └── linux
+│           ├── NewChainGuard
+│           └── NewChainGuard.sha256
 ├── newchain
 │   ├── latest.txt
 │   ├── latest-testnet.txt
@@ -36,9 +42,9 @@ Index of /newton/
 ```
 
 其中，
-* /newton/newchain/latest
+* /newton/newchain/latest.txt
   * 内容为 NewChain 最新版本号
-  * 一般为 [newchain 仓库的tag名](https://gitlab.newtonproject.org/mengguang/newchain/tags)，例如 v1.8.26-newton-1.0， v1.8.26-newton-1.1
+  * 一般为 [newchain 仓库的tag名](https://github.com/newtonproject/newchain/tags)，例如 v1.8.26-newton-1.0， v1.8.26-newton-1.1
   * 需要保证文件 /newton/newchain/tagName/linux/geth 和 /newton/newchain/tagName/linux/geth.sha256 在发布服务上
 * /newton/newchain-deploy/mainnet/newchain.sh
   * NewChain主网自动化部署脚本
@@ -48,6 +54,10 @@ Index of /newton/
   * NewChain测试网自动化部署脚本
   * 第9行包含最新版本号
   * 第10行包含当前Network
+* /newton/NewChainGuard/latest.txt
+  * 内容为 NewChainGuard 最新版本号
+  * 一般为 [NewChainGuard 仓库的tag名](https://gitlab.newtonproject.org)，例如 v0.8.0
+  * 需要保证文件 /newton/NewChainGuard/tagName/linux/NewChainGuard 和 /newton/NewChainGuard/tagName/linux/NewChainGuard.sha256 在发布服务上
 
 ## 只读节点发布步骤
 
@@ -73,5 +83,7 @@ shasum -a 256 geth > geth.sha256
 针对 testnet:
 更新 /newton/newchain/latest-testnet.txt 里的 newchain 最新版本号为新发布的tag latestTagName
 
+### 4. 更新genesis.json
 
-
+如果需要在指定高度进行硬分叉，需要在更新 newchain-deploy 残酷 {mainnet,testnet}/share/newchain{mainnet,testnet}.json 文件，
+每次升级时均会执行 re-init 操作。
