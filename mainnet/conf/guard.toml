@@ -28,7 +28,7 @@ MethodWhitelist = [
 ]
 
 # GasPrice
-MinGasPriceInWei = 100000000000 # WEI
+MinGasPriceInWei = 500000000000000 # WEI
 #MaxGasPriceInWEI = 1000000000000000000 # 1NEW, max is 9223372036854775807 (int64)
 
 # Log
