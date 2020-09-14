@@ -30,6 +30,7 @@ MinimumAcceptedPOW = 2e-01
 
 [Node]
 DataDir = "/data/newchain/mainnet/nodedata"
+NoUSB = true
 IPCPath = "geth.ipc"
 HTTPHost = "0.0.0.0"
 HTTPPort = 8808
