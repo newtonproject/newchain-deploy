@@ -15,8 +15,8 @@ SnapshotCache = 0
 EnablePreimageRecording = false
 EWASMInterpreter = ""
 EVMInterpreter = ""
-RPCGasCap = 25000000
-RPCTxFeeCap = 1e+00
+RPCGasCap = 0
+RPCTxFeeCap = 0e+00
 
 [Eth.TxPool]
 Locals = []
