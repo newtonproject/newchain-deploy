@@ -232,39 +232,45 @@ color "37" "Updated NewChain Guard binary link."
 ################## deploy files ##################
 # NewChain Deploy file
 color "" "################## deploy config files ##################"
-if [[ ! -x /data/newchain/conf/node.toml ]]; then
-  newchain_network_deploy_file="newchain-${networkname}-$newchain_deploy_latest_version.tar.gz"
-
-  if [[ ! -x $newchain_network_deploy_file ]]; then
-      color "34" "Downloading NewChain installation package@${newchain_network_deploy_file} to ${newchain_network_deploy_file}"
-      color "33" "${download_rooturl}/newton/newchain-deploy/${networkname}/${newchain_network_deploy_file}"
-      curl -L "${download_rooturl}/newton/newchain-deploy/${networkname}/${newchain_network_deploy_file}" -o $newchain_network_deploy_file || {
-        color "31" "Failed to download the NewChain installation package."
-        exit 1
-      }
-      curl --silent -L "${download_rooturl}/newton/newchain-deploy/${networkname}/${newchain_network_deploy_file}.sha256" -o "${newchain_network_deploy_file}.sha256"
-      chmod +x $newchain_network_deploy_file
-  else
-      color "37" "NewChain installation package is up to date."
-  fi
-
-  color "37" "Trying to verify the downloaded installation file..."
-  # TODO: add gpg
-  sha256sum_deploy_res=$(shasum -a 256 -c "${newchain_network_deploy_file}.sha256" | awk '{print $2}')
-  if [ "$sha256sum_deploy_res" == "OK" ]; then
-      color "32" "Verify $newchain_network_deploy_file $sha256sum_deploy_res, checksum match."
-  else
-      color "41" "Verify $newchain_network_deploy_file $sha256sum_deploy_res, checksum did NOT match."
+# get deploy files
+newchain_network_deploy_file="newchain-${networkname}-$newchain_deploy_latest_version.tar.gz"
+if [[ ! -x $newchain_network_deploy_file ]]; then
+    color "34" "Downloading NewChain installation package@${newchain_network_deploy_file} to ${newchain_network_deploy_file}"
+    color "33" "${download_rooturl}/newton/newchain-deploy/${networkname}/${newchain_network_deploy_file}"
+    curl -L "${download_rooturl}/newton/newchain-deploy/${networkname}/${newchain_network_deploy_file}" -o $newchain_network_deploy_file || {
+      color "31" "Failed to download the NewChain installation package."
       exit 1
-  fi
-
-  tar zxf "$newchain_network_deploy_file" -C /data/newchain  || {
-    color "31" "Failed to extract $newchain_network_deploy_file to /data/newchain."
-    exit 1
-  }
-  chown -R $sudo_user /data/newchain
-  sed -i "s/run_as_username/$sudo_user/g" /data/newchain/${networkname}/conf/node.toml
+    }
+    curl --silent -L "${download_rooturl}/newton/newchain-deploy/${networkname}/${newchain_network_deploy_file}.sha256" -o "${newchain_network_deploy_file}.sha256"
+    chmod +x $newchain_network_deploy_file
+else
+    color "37" "NewChain installation package is up to date."
 fi
+
+color "37" "Trying to verify the downloaded installation file..."
+# TODO: add gpg
+sha256sum_deploy_res=$(shasum -a 256 -c "${newchain_network_deploy_file}.sha256" | awk '{print $2}')
+if [ "$sha256sum_deploy_res" == "OK" ]; then
+    color "32" "Verify $newchain_network_deploy_file $sha256sum_deploy_res, checksum match."
+else
+    color "41" "Verify $newchain_network_deploy_file $sha256sum_deploy_res, checksum did NOT match."
+    exit 1
+fi
+# check current config files
+current_time=$(date +"%Y%m%d%H%M%S")
+if [[ -x /data/newchain/${networkname}/conf/node.toml ]]; then
+    mv /data/newchain/${networkname}/conf/node.toml /data/newchain/${networkname}/conf/node.${current_time}.toml
+fi
+if [[ -x /data/newchain/${networkname}/conf/guard.toml ]]; then
+    mv /data/newchain/${networkname}/conf/guard.toml /data/newchain/${networkname}/conf/guard.${current_time}.toml
+fi
+# force extract deploy files
+tar zxf "$newchain_network_deploy_file" -C /data/newchain  || {
+  color "31" "Failed to extract $newchain_network_deploy_file to /data/newchain."
+  exit 1
+}
+chown -R $sudo_user /data/newchain
+sed -i "s/run_as_username/$sudo_user/g" /data/newchain/${networkname}/conf/node.toml
 
 if [[ ! -x /data/newchain/${networkname}/nodedata/geth/ ]]; then
   color "37" "Trying to init the NewChain node data directory..."
@@ -276,7 +282,7 @@ else
   # force re-init nodedata
   color "37" "Trying to re-init the NewChain node data directory..."
   /data/newchain/${networkname}/bin/geth --config /data/newchain/${networkname}/conf/node.toml --datadir /data/newchain/${networkname}/nodedata init /data/newchain/${networkname}/share/newchain${networkname}.json  || {
-    color "31" "Failed to init the NewChain node data directory."
+    color "31" "Failed to re-init the NewChain node data directory."
     exit 1
   }
 fi
