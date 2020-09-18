@@ -54,8 +54,8 @@ MethodWhitelist = [
 ]
 
 # GasPrice
-MinGasPriceInWei = 500000000000000 # WEI
-#MaxGasPriceInWEI = 1000000000000000000 # 1NEW, max is 9223372036854775807 (int64)
+MinGasPriceInWei = 500000000000000 # 0.0005 NEW
+MaxGasPriceInWEI = 5000000000000000 # 0.005 NEW
 
 # Log
 # log level: panic, fatal, error, warn, info, debug

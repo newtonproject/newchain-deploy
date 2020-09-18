@@ -18,6 +18,9 @@ EVMInterpreter = ""
 RPCGasCap = 0
 RPCTxFeeCap = 0e+00
 
+[Eth.Miner]
+GasPrice = 500000000000000
+
 [Eth.TxPool]
 Locals = []
 NoLocals = true
