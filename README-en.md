@@ -6,7 +6,7 @@
   - System OS: Ubuntu 18.04 LTS 64-bit or Ubuntu 16.04 LTS 64-bit
   - Processor: 2-core CPU
   - Memory: 8GB RAM
-  - Storage: 100GB available space SSD
+  - Storage: 100GB available space SSD for mainnet and 200GB for testnet
   - Internet: Public IP
 
 For server requirements, please refer to AWS m5a.large or Alibaba Cloud ecs.t5
