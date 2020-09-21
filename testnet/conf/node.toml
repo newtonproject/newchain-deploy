@@ -19,7 +19,11 @@ RPCGasCap = 0
 RPCTxFeeCap = 0e+00
 
 [Eth.Miner]
+GasFloor = 100000000
+GasCeil = 8000000
 GasPrice = 500000000000000
+Recommit = 3000000000
+Noverify = false
 
 [Eth.TxPool]
 Locals = []
