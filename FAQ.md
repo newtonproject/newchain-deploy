@@ -24,7 +24,7 @@ sudo supervisorctl tail -f newchain stderr
 * 如果已经同步成功，则返回 false
 * 如果还在同步，则显示同步进程
 
-```json
+```
 {
   currentBlock: 800454,
   highestBlock: 18508008,
