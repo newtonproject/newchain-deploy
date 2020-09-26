@@ -46,6 +46,7 @@ MethodWhitelist = [
     "eth_getLogs",
     "eth_chainId",
     "eth_getProof",
+    "eth_getRawTransactionByHash",
     "txpool_status",
     "rpc_modules",
 ]
