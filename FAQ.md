@@ -41,13 +41,14 @@ sudo supervisorctl tail -f newchain stderr
 
 ## 2. 如何更改记账节点收益地址keystore对应的密码？
 
+2.1 查询之前Keystore密码
+如果忘记您之前的密码， 输入命令 `cat /data/newchain/testnet/password.txt`）
+
+2.2 更改密码
 假设您的记账节点地址为 0x1111111111111111111111111111111111111111， 新密码为 `123456`, 
 
 替换如下命令中的 `123456` 为您自己的密码，
-
 替换如下命令中的 `0x1111111111111111111111111111111111111111` 为您自己的记账节点地址，
-
-- 更改密码
 
 执行命令：
 
@@ -55,7 +56,7 @@ sudo supervisorctl tail -f newchain stderr
 /data/newchain/testnet/bin/geth --nousb --config /data/newchain/testnet/conf/node.toml account update 0x1111111111111111111111111111111111111111
 ```
 
-该命令是需要更改您的密码，您需要先输入您之前的密码（如果为空，则直接回车，如果忘记您之前的密码， 输入命令 `cat /data/newchain/testnet/password.txt`）,
+该命令为更改keystore密码，您需要先输入您之前的密码
 之后输入您的新密码 `123456`
 
 - 替换 password.txt 密码
