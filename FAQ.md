@@ -54,7 +54,7 @@ sudo supervisorctl tail -f newchain stderr
 ```bash
 /data/newchain/testnet/bin/geth --nousb --config /data/newchain/testnet/conf/node.toml account update 0x1111111111111111111111111111111111111111
 ```
-该命令为更改keystore密码，您需要先输入您之前的密码
+该命令会更改keystore密码，您需要先输入您之前的密码（如果您原keystore密码为空，则直接回车即可），
 之后输入您的新密码 `123456`
 
 2.3 替换 password.txt 密码
@@ -65,13 +65,13 @@ sudo supervisorctl tail -f newchain stderr
 echo "123456" > /data/newchain/testnet/password.txt
 ```
 
-- 重启 NewChain
+2.4 重启 NewChain
 
 ```bash
 sudo supervisorctl restart newchain
 ```
 
-- 查看日志
+2.5 查看日志
 
 ```bash
 sudo supervisorctl tail -f newchain stderr
