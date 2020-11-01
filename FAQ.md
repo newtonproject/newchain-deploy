@@ -122,8 +122,9 @@ sed  -i "s,command=.*,command=/data/newchain/testnet/bin/geth --config /data/new
 sudo supervisorctl update
 ```
 
+3.6 重新投票
 
-
+联系节点负责人协助您进行投票，把新地址设置为miner
 
 
 
