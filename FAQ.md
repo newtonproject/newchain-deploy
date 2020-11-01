@@ -76,3 +76,53 @@ sudo supervisorctl restart newchain
 ```bash
 sudo supervisorctl tail -f newchain stderr
 ```
+
+## 3. 如何重置记账节点收益地址keystore对应的地址？
+
+3.1 暂停现在运行的节点
+
+```
+sudo supervisorctl stop newchain
+```
+
+3.2 创建新地址
+
+```
+/data/newchain/testnet/bin/geth --config /data/newchain/testnet/conf/node.toml account new
+```
+
+之后您需要输入您的新地址的keystore的密码，需要重复输入两次
+
+之后就会看到您的地址，在`Public address of the key`之后，以0x开头
+
+3.3 更改password.txt里的密码
+
+假设您的新密码为 `123456`，则执行如下命令：
+
+```
+echo "123456" > /data/newchain/testnet/password.txt
+```
+
+您实际运行时需要替换`123456`为您的keystore密码
+
+3.4 更改supervisor配置文件
+
+假设您的新地址为 `0x1111111111111111111111111111111111111111`，则需要执行如下命令：
+
+
+```
+sed  -i "s,command=.*,command=/data/newchain/testnet/bin/geth --config /data/newchain/testnet/conf/node.toml --mine --unlock 0x1111111111111111111111111111111111111111 --password /data/newchain/testnet/password.txt --allow-insecure-unlock --miner.gastarget 100000000,"  /etc/supervisor/conf.d/newchain.conf
+```
+
+3.5 更新并重启
+
+```
+sudo supervisorctl update
+```
+
+
+
+
+
+
+
