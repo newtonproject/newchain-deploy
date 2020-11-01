@@ -114,6 +114,8 @@ echo "123456" > /data/newchain/testnet/password.txt
 sed  -i "s,command=.*,command=/data/newchain/testnet/bin/geth --config /data/newchain/testnet/conf/node.toml --mine --unlock 0x1111111111111111111111111111111111111111 --password /data/newchain/testnet/password.txt --allow-insecure-unlock --miner.gastarget 100000000,"  /etc/supervisor/conf.d/newchain.conf
 ```
 
+**务必替换0x1111111111111111111111111111111111111111为您自己的地址**
+
 3.5 更新并重启
 
 ```
