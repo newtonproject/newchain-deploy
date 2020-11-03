@@ -37,4 +37,8 @@ if [[ -n ${USE_DOWNLOAD_ROOTURL:-} ]]; then
   sed  -i "s,download_rooturl=.*,download_rooturl='${USE_DOWNLOAD_ROOTURL}'," newchain.sh
 fi
 
+# handle newchain_mine.sh
+cp ./../../newchain_mine.sh newchain_mine.sh
+sed  -i "s/default_networkname=.*/default_networkname='${networkname}'/" newchain_mine.sh
+
 

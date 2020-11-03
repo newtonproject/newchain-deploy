@@ -1,6 +1,6 @@
 #!/bin/bash
 
-networkname="testnet"
+default_networkname="mainnet"
 
 cd /data/newchain/${networkname}/
 
@@ -14,20 +14,41 @@ function color() {
 }
 color "37" ""
 
-if [[ $(/data/newchain/testnet/bin/geth attach /data/newchain/testnet/nodedata/geth.ipc --exec eth.syncing) != "false" ]]; then
+if [[ "$*" == "" ]]; then
+  networkname="${default_networkname}"
+elif [[ "$*" == "mainnet" || "$*" == "main" ]]; then
+  networkname="mainnet"
+elif [[ "$*" == "testnet" || "$*" == "test" ]]; then
+  networkname="testnet"
+else
+  color "31" "Not support network $*."
+  exit 1
+fi
+color "32" "Current NewChain network is ${networkname}"
+
+if [[ $(/data/newchain/${networkname}/bin/geth attach /data/newchain/${networkname}/nodedata/geth.ipc --exec eth.syncing) != "false" ]]; then
   color "31" "Please wait until your node synchronization is complete"
-  exit 0
+  #exit 0
 else
   color "37" "Your node has been synchronized"
 fi
 
 # Trying to get current miner address if exits
-address=$(/data/newchain/testnet/bin/geth attach /data/newchain/testnet/nodedata/geth.ipc --exec eth.coinbase | sed 's/\"//g')
+address=$(/data/newchain/${networkname}/bin/geth attach /data/newchain/${networkname}/nodedata/geth.ipc --exec eth.coinbase | sed 's/\"//g')
 if [[ ${address} != 0x* || ${#address} < 42 ]]; then
   # Account
-  echo -n "Create new password for your miner's keystore: "
-  read -s password
+  color "" "Create new password for your miner's keystore."
+  color "" "Your new account is locked with a password. Please give a password. Do not forget this password."
+  echo -n "Password: "
+  read -s password0
   echo
+  echo -n "Repeat password: "
+  read -s password1
+  echo
+  if [[ ${password0}  != ${password1} ]]; then
+    color "31" "Passwords do not match"
+    exit 0
+  fi
   echo $password > /data/newchain/${networkname}/password.txt
 
   # /data/newchain/${networkname}/bin/geth --config /data/newchain/${networkname}/conf/node.toml account new --password /data/newchain/${networkname}/password.txt
@@ -43,7 +64,7 @@ fi
 current_time=$(date +"%Y%m%d%H%M%S")
 cp /data/newchain/${networkname}/conf/node.toml /data/newchain/${networkname}/conf/node.bak.${current_time}.toml
 cp /etc/supervisor/conf.d/newchain.conf /data/newchain/${networkname}/supervisor/newchain.bak.${current_time}.conf
-sudo sed  -i "s,command=.*,command=/data/newchain/testnet/bin/geth --config /data/newchain/testnet/conf/node.toml --mine --unlock ${address} --password /data/newchain/${networkname}/password.txt --allow-insecure-unlock --miner.gastarget 100000000," /etc/supervisor/conf.d/newchain.conf
+sudo sed  -i "s,command=.*,command=/data/newchain/testnet/bin/geth --config /data/newchain/${networkname}/conf/node.toml --mine --unlock ${address} --password /data/newchain/${networkname}/password.txt --allow-insecure-unlock --miner.gastarget 100000000," /etc/supervisor/conf.d/newchain.conf
 sudo supervisorctl update
 
 # get IPs from ifconfig and dig

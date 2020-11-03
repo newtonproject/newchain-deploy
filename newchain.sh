@@ -64,6 +64,39 @@ color "32" "Current NewChain network is ${networkname}"
 
 download_rooturl="https://release.cloud.diynova.com"
 
+################## system info ##################
+color "37" "Trying to check system info..."
+mkdir -p /data/newchain/${networkname}
+# check disk available space
+DiskSize=$(df -P /data/newchain/${networkname} | awk 'NR==2 {print $4}')
+MemTotal=$(awk '/^MemTotal:/{print $2}' /proc/meminfo)
+# 2 GB = 2097152 KB
+# 4 GB = 4194304 KB
+# 8 GB = 8388608 KB
+# 10GB = 10485760 KB = 10737418240 bytes
+# 20GB = 20971520 KB = 21474836480 bytes
+# 50GB = 52428800 KB = 53687091200 bytes
+# 100GB = 104857600 KB = 107374182400 bytes
+DiskSizeGB=$((${DiskSize}/1024/1024))
+MemTotalGB=$((${MemTotal}/1024/1024))
+color "" "Avail disk space is ${DiskSize} KB (${DiskSizeGB} GB)."
+color "" "Total memory is ${MemTotal} KB (${MemTotalGB} GB)"
+if [[ ${networkname} == "mainnet" ]]; then
+  if [[ ${DiskSize} -lt 20971520 ]]; then
+      color 31 'Disk space is less than 20 GB (20971520 KB)'
+      exit 0
+  fi
+else
+  if [[ ${DiskSize} -lt 104857600 ]]; then
+      color 31 'Disk space is less than 100 GB (104857600 KB)'
+      exit 0
+  fi
+fi
+# use 8000000 instead of 8388608
+if [[ ${MemTotal} -lt 8000000 ]]; then
+    color 31 'Total memory is less than 8 GB (8388608 KB)'
+    exit 0
+fi
 
 ################## work directory ##################
 color "37" "Trying to init the work directory..."
