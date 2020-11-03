@@ -31,7 +31,7 @@ test:
 	@echo "${VERSION}: copy files under './build/testnet' to testnet release server."
 
 clean:
-	rm -rf build/
+	rm -r build/
 
 check:
 	@[ "${VERSION}" ] && echo "VERSION is $(VERSION)" || ( echo "VERSION is not set"; exit 1 )

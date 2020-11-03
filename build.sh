@@ -38,7 +38,7 @@ if [[ -n ${USE_DOWNLOAD_ROOTURL:-} ]]; then
 fi
 
 # handle newchain_mine.sh
-cp ./../../newchain_mine.sh newchain_mine.sh
-sed  -i "s/default_networkname=.*/default_networkname='${networkname}'/" newchain_mine.sh
+cp ./../../newchain-mine.sh newchain-mine.sh
+sed  -i "s/default_networkname=.*/default_networkname='${networkname}'/" newchain-mine.sh
 
 

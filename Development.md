@@ -34,8 +34,10 @@ Index of /newton/
     ├── mainnet
     │   ├── newchain-mainnet-v1.0.tar.gz
     │   ├── newchain-mainnet-v1.0.tar.gz.sha256
+    |   ├── newchain-mine.sh
     │   └── newchain.sh
     └── testnet
+        ├── newchain-mine.sh
         ├── newchain.sh
         ├── newchain-testnet-v1.0.tar.gz
         └── newchain-testnet-v1.0.tar.gz.sha256
