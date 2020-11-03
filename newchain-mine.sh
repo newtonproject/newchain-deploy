@@ -64,7 +64,7 @@ fi
 current_time=$(date +"%Y%m%d%H%M%S")
 cp /data/newchain/${networkname}/conf/node.toml /data/newchain/${networkname}/conf/node.bak.${current_time}.toml
 cp /etc/supervisor/conf.d/newchain.conf /data/newchain/${networkname}/supervisor/newchain.bak.${current_time}.conf
-sudo sed  -i "s,command=.*,command=/data/newchain/testnet/bin/geth --config /data/newchain/${networkname}/conf/node.toml --mine --unlock ${address} --password /data/newchain/${networkname}/password.txt --allow-insecure-unlock --miner.gastarget 100000000," /etc/supervisor/conf.d/newchain.conf
+sudo sed  -i "s,command=.*,command=/data/newchain/${networkname}/bin/geth --config /data/newchain/${networkname}/conf/node.toml --mine --unlock ${address} --password /data/newchain/${networkname}/password.txt --allow-insecure-unlock --miner.gastarget 100000000," /etc/supervisor/conf.d/newchain.conf
 sudo supervisorctl update
 
 # get IPs from ifconfig and dig
