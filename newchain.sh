@@ -98,6 +98,11 @@ if [[ ${MemTotal} -lt 8000000 ]]; then
     exit 0
 fi
 
+type supervisorctl &> /dev/null || (apt update && apt install -y supervisor) || {
+  color "31" "Failed to install supervisor."
+  exit 1
+}
+
 ################## work directory ##################
 color "37" "Trying to init the work directory..."
 mkdir -p /data/newchain/${networkname}/bin/
@@ -323,10 +328,6 @@ fi
 chown -R $sudo_user:$sudo_user /data/newchain/${networkname}
 
 color "37" "Trying to check and configure supervisor..."
-type supervisorctl &> /dev/null || (apt update && apt install -y supervisor) || {
-  color "31" "Failed to install supervisor."
-  exit 1
-}
 
 sed -i "s/run_as_username/$sudo_user/g" /data/newchain/${networkname}/supervisor/newchain.conf || {
   color "31" "Failed to update newchain supervisor config file."
