@@ -49,7 +49,7 @@ if [[ ${address} != 0x* || ${#address} < 42 ]]; then
     color "31" "Passwords do not match"
     exit 0
   fi
-  echo $password > /data/newchain/${networkname}/password.txt
+  echo ${password0} > /data/newchain/${networkname}/password.txt
 
   # /data/newchain/${networkname}/bin/geth --config /data/newchain/${networkname}/conf/node.toml account new --password /data/newchain/${networkname}/password.txt
   address=`/data/newchain/${networkname}/bin/geth --config /data/newchain/${networkname}/conf/node.toml account new --password /data/newchain/${networkname}/password.txt | grep "Public address" | awk '{print $6}'`
