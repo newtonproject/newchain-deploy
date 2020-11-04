@@ -28,7 +28,7 @@ color "32" "Current NewChain network is ${networkname}"
 
 if [[ $(/data/newchain/${networkname}/bin/geth attach /data/newchain/${networkname}/nodedata/geth.ipc --exec eth.syncing) != "false" ]]; then
   color "31" "Please wait until your node synchronization is complete"
-  exit 0
+  #exit 0
 else
   color "37" "Your node has been synchronized"
 fi
@@ -47,6 +47,14 @@ if [[ ${address} != 0x* || ${#address} < 42 ]]; then
   echo
   if [[ ${password0}  != ${password1} ]]; then
     color "31" "Passwords do not match"
+    exit 0
+  fi
+  if [[ ${password0} == "" ]]; then
+    color "31" "Passwords is empty"
+    exit 0
+  fi
+  if ( echo ${password0} | grep -q ' ' ); then
+    color "31" "Passwords has space"
     exit 0
   fi
   echo ${password0} > /data/newchain/${networkname}/password.txt
