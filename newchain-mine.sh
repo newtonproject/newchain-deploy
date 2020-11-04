@@ -28,7 +28,7 @@ color "32" "Current NewChain network is ${networkname}"
 
 if [[ $(/data/newchain/${networkname}/bin/geth attach /data/newchain/${networkname}/nodedata/geth.ipc --exec eth.syncing) != "false" ]]; then
   color "31" "Please wait until your node synchronization is complete"
-  #exit 0
+  exit 0
 else
   color "37" "Your node has been synchronized"
 fi
