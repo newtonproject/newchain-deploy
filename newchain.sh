@@ -6,7 +6,7 @@ set -eu
 # Use USE_NEWCHAIN_VERSION to specify a specific release version.
 #   Example: USE_NEWCHAIN_VERSION=v1.8.26 ./newchain.sh
 
-newchain_deploy_latest_version='v1.2.2'
+newchain_deploy_latest_version='v1.3.0'
 default_networkname='mainnet'
 
 function color() {
