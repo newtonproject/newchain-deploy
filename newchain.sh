@@ -77,18 +77,21 @@ MemTotal=$(awk '/^MemTotal:/{print $2}' /proc/meminfo)
 # 20GB = 20971520 KB = 21474836480 bytes
 # 50GB = 52428800 KB = 53687091200 bytes
 # 100GB = 104857600 KB = 107374182400 bytes
+# 200GB = 209715200 KB = 214748364800 bytes
 DiskSizeGB=$((${DiskSize}/1024/1024))
 MemTotalGB=$((${MemTotal}/1024/1024))
 color "" "Avail disk space is ${DiskSize} KB (${DiskSizeGB} GB)."
 color "" "Total memory is ${MemTotal} KB (${MemTotalGB} GB)"
 if [[ ${networkname} == "mainnet" ]]; then
-  if [[ ${DiskSize} -lt 20971520 ]]; then
-      color 31 'Disk space is less than 20 GB (20971520 KB)'
+  # use 100000000 instead of 104857600
+  if [[ ${DiskSize} -lt 100000000 ]]; then
+      color 31 'Disk space is less than 100 GB (104857600 KB)'
       exit 0
   fi
 else
-  if [[ ${DiskSize} -lt 104857600 ]]; then
-      color 31 'Disk space is less than 100 GB (104857600 KB)'
+  # use 200000000 instead of 209715200
+  if [[ ${DiskSize} -lt 200000000 ]]; then
+      color 31 'Disk space is less than 200 GB (209715200 KB)'
       exit 0
   fi
 fi
