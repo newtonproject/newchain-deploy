@@ -67,38 +67,45 @@ download_rooturl="https://release.cloud.diynova.com"
 ################## system info ##################
 color "37" "Trying to check system info..."
 mkdir -p /data/newchain/${networkname}
-# check disk available space
-DiskSize=$(df -P /data/newchain/${networkname} | awk 'NR==2 {print $4}')
-MemTotal=$(awk '/^MemTotal:/{print $2}' /proc/meminfo)
-# 2 GB = 2097152 KB
-# 4 GB = 4194304 KB
-# 8 GB = 8388608 KB
-# 10GB = 10485760 KB = 10737418240 bytes
-# 20GB = 20971520 KB = 21474836480 bytes
-# 50GB = 52428800 KB = 53687091200 bytes
-# 100GB = 104857600 KB = 107374182400 bytes
-# 200GB = 209715200 KB = 214748364800 bytes
-DiskSizeGB=$((${DiskSize}/1024/1024))
-MemTotalGB=$((${MemTotal}/1024/1024))
-color "" "Avail disk space is ${DiskSize} KB (${DiskSizeGB} GB)."
-color "" "Total memory is ${MemTotal} KB (${MemTotalGB} GB)"
-if [[ ${networkname} == "mainnet" ]]; then
-  # use 100000000 instead of 104857600
-  if [[ ${DiskSize} -lt 100000000 ]]; then
-      color 31 'Disk space is less than 100 GB (104857600 KB)'
+work_size=$(du -s /data/newchain/${networkname} | awk '{print $1}')
+echo ${work_size}
+# if less then 100 M, then check disk available space
+if [[ ${work_size} -lt 102400 ]]; then
+  # first time, check disk available space
+  DiskSize=$(df -P /data/newchain/${networkname} | awk 'NR==2 {print $4}')
+  MemTotal=$(awk '/^MemTotal:/{print $2}' /proc/meminfo)
+  # 2 GB = 2097152 KB
+  # 4 GB = 4194304 KB
+  # 8 GB = 8388608 KB
+  # 10GB = 10485760 KB = 10737418240 bytes
+  # 20GB = 20971520 KB = 21474836480 bytes
+  # 50GB = 52428800 KB = 53687091200 bytes
+  # 100GB = 104857600 KB = 107374182400 bytes
+  # 200GB = 209715200 KB = 214748364800 bytes
+  DiskSizeGB=$((${DiskSize}/1024/1024))
+  MemTotalGB=$((${MemTotal}/1024/1024))
+  color "" "Avail disk space is ${DiskSize} KB (${DiskSizeGB} GB)."
+  color "" "Total memory is ${MemTotal} KB (${MemTotalGB} GB)"
+  if [[ ${networkname} == "mainnet" ]]; then
+    # use 100000000 instead of 104857600
+    if [[ ${DiskSize} -lt 100000000 ]]; then
+        color 31 'Disk space is less than 100 GB (104857600 KB)'
+        exit 0
+    fi
+  else
+    # use 200000000 instead of 209715200
+    if [[ ${DiskSize} -lt 200000000 ]]; then
+        color 31 'Disk space is less than 200 GB (209715200 KB)'
+        exit 0
+    fi
+  fi
+  # use 8000000 instead of 8388608
+  if [[ ${MemTotal} -lt 8000000 ]]; then
+      color 31 'Total memory is less than 8 GB (8388608 KB)'
       exit 0
   fi
 else
-  # use 200000000 instead of 209715200
-  if [[ ${DiskSize} -lt 200000000 ]]; then
-      color 31 'Disk space is less than 200 GB (209715200 KB)'
-      exit 0
-  fi
-fi
-# use 8000000 instead of 8388608
-if [[ ${MemTotal} -lt 8000000 ]]; then
-    color 31 'Total memory is less than 8 GB (8388608 KB)'
-    exit 0
+ color "" "Detected current is an upgrade, ignore the system info check."
 fi
 
 type supervisorctl &> /dev/null || (apt update && apt install -y supervisor) || {
