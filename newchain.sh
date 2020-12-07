@@ -68,7 +68,6 @@ download_rooturl="https://release.cloud.diynova.com"
 color "37" "Trying to check system info..."
 mkdir -p /data/newchain/${networkname}
 work_size=$(du -s /data/newchain/${networkname} | awk '{print $1}')
-echo ${work_size}
 # if less then 100 M, then check disk available space
 if [[ ${work_size} -lt 102400 ]]; then
   # first time, check disk available space
