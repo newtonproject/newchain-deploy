@@ -1,14 +1,27 @@
 [Eth]
 NetworkId = 1012
 SyncMode = "full"
+DiscoveryURLs = []
+NoPruning = false
+NoPrefetch = false
 LightPeers = 100
+UltraLightFraction = 75
 DatabaseCache = 768
+DatabaseFreezer = ""
+TrieCleanCache = 256
+TrieDirtyCache = 256
+TrieTimeout = 3600000000000
+SnapshotCache = 0
 EnablePreimageRecording = false
-RPCGasCap = 0
-RPCTxFeeCap = 0e+00
+EWASMInterpreter = ""
+EVMInterpreter = ""
 
 [Eth.Miner]
+GasFloor = 100000000
+GasCeil = 8000000
 GasPrice = 500000000000000
+Recommit = 3000000000
+Noverify = false
 
 [Eth.TxPool]
 NoLocals = true
