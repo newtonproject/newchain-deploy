@@ -77,6 +77,9 @@ Create file ~/.newchain/mainnet/genesis.json:
     "eip155Block": 3,
     "eip158Block": 3,
     "byzantiumBlock": 4,
+    "constantinopleBlock": 18500000,
+    "petersburgBlock": 18500000,
+    "istanbulBlock": 18500000,
     "clique": {
       "period": 3,
       "epoch": 30000
