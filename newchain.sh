@@ -92,8 +92,8 @@ if [[ ${work_size} -lt 102400 ]]; then
         exit 0
     fi
   else
-    # use 200000000 instead of 209715200
-    if [[ ${DiskSize} -lt 200000000 ]]; then
+    # use 200000000 instead of 209715200, update for testnet 2021
+    if [[ ${DiskSize} -lt 100000000 ]]; then
         color 31 'Disk space is less than 200 GB (209715200 KB)'
         exit 0
     fi
