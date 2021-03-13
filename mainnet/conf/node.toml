@@ -51,6 +51,7 @@ NoUSB = true
 IPCPath = "geth.ipc"
 HTTPHost = "127.0.0.1"
 HTTPPort = 8808
+HTTPCors = ["*"]
 HTTPVirtualHosts = ["*"]
 HTTPModules = ["eth", "txpool", "net"]
 WSPort = 8546
