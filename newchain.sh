@@ -99,7 +99,7 @@ if [[ ${work_size} -lt 102400 ]]; then
     fi
   fi
   # use 8000000 instead of 8388608
-  if [[ ${MemTotal} -lt 8000000 ]]; then
+  if [[ ${MemTotal} -lt 7200000 ]]; then
       color 31 'Total memory is less than 8 GB (8388608 KB)'
       exit 0
   fi
