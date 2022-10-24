@@ -49,7 +49,18 @@ $ mkdir -p ~/newchain && cd ~/newchain
 $ curl -L https://release.cloud.diynova.com/newton/newchain-deploy/testnet/newchain.sh -o newchain.sh && chmod +x newchain.sh
 ```
 
-##### 2.2 注释`newchain.sh`第322-355行代码
+##### 2.2 修改 `newchain.sh`
+
+###### 2.2.1 注释 第155-158行代码
+
+```bash
+  # supervisorctl restart newchain || {
+  #   color "31" "Failed to restart newchain by supervisor."
+  #   exit 1
+  # }
+```
+
+###### 2.2.2 注释`newchain.sh`第322-335行代码
 
 ```bash
 # if [[ ! -x /data/newchain/${networkname}/nodedata/geth/ ]]; then
@@ -68,7 +79,7 @@ $ curl -L https://release.cloud.diynova.com/newton/newchain-deploy/testnet/newch
 # fi
 ```
 
-##### 2.3 注释`newchain.sh`第367-381行代码
+###### 2.2.3 注释`newchain.sh`第367-381行代码
 
 ```bash
 # newchainstatus="$(supervisorctl status newchain | awk '{print $2}')"
@@ -88,7 +99,7 @@ $ curl -L https://release.cloud.diynova.com/newton/newchain-deploy/testnet/newch
 # fi
 ```
 
-##### 2.4 执行脚本
+##### 2.3 执行脚本
 
 ```bash
 $ sudo ./newchain.sh
@@ -167,8 +178,8 @@ GraphQLVirtualHosts = ["localhost"]
 [Node.P2P]
 MaxPeers = 25
 NoDiscovery = false
-BootstrapNodes = ["enode://3b0e125a47b372a94f1d31e05cec5a8d864ea9e562738183d0b693885b7ff2949d58401b94a2e07c30a0e876d90757b92557404fa770bbb4f2968b2007223b63@18.178.210.219:38311"]
-BootstrapNodesV5 = ["enode://3b0e125a47b372a94f1d31e05cec5a8d864ea9e562738183d0b693885b7ff2949d58401b94a2e07c30a0e876d90757b92557404fa770bbb4f2968b2007223b63@18.178.210.219:38311"]
+BootstrapNodes = ["enode://0a4cf1b2f21f1caae594aea2c9a2ffced3db9bd71f595f9273a6ef2fbc11d68dd0f12867bddb0ca20a9157e11b20bbd4b755a4b28a3515583ac9327c528a5ffe@18.178.210.219:38311"]
+BootstrapNodesV5 = ["enode://0a4cf1b2f21f1caae594aea2c9a2ffced3db9bd71f595f9273a6ef2fbc11d68dd0f12867bddb0ca20a9157e11b20bbd4b755a4b28a3515583ac9327c528a5ffe@18.178.210.219:38311"]
 StaticNodes = []
 TrustedNodes = []
 ListenAddr = ":38311"
