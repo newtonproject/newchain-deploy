@@ -112,6 +112,11 @@ type supervisorctl &> /dev/null || (apt update && apt install -y supervisor) || 
   exit 1
 }
 
+type shasum &> /dev/null || (apt update && apt install -y libdigest-sha-perl) || {
+  color "31" "Failed to install libdigest-sha-perl."
+  exit 1
+}
+
 ################## work directory ##################
 color "37" "Trying to init the work directory..."
 mkdir -p /data/newchain/${networkname}/bin/
