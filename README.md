@@ -1,61 +1,62 @@
-# NewChain只读节点部署方法
+# NewChain node deployment guide
 
-## 1. 服务器环境要求
+## 1. System requirements
 
-### 1.1 最小配置
-  - 操作系统：Ubuntu 18.04 LTS 64位 或 Ubuntu 16.04 LTS 64位
-  - 处理器： 2核心 CPU
-  - 内存： 8GB
-  - 存储： 主网需要 150 GB可用存储空间， 测试网需要 150 GB 可用存储空间
-  - 网络： 公网IP
+### 1.1 Recommended specifications
+  - System OS: Ubuntu 18.04 LTS 64-bit or Ubuntu 16.04 LTS 64-bit
+  - Processor: 2-core CPU
+  - Memory: 8GB RAM
+  - Storage: 150GB available space SSD for mainnet and 250GB for testnet
+  - Internet: Public IP
 
-服务器配置可参考 AWS m5a.large 或 阿里云 ecs.t5
+For server requirements, please refer to AWS m5a.large or Alibaba Cloud ecs.t5
 
-### 1.2 系统配置
-  - 系统数据盘挂载： /data 目录为系统数据盘的挂载点
-  - 防火墙： 防火墙需要打开 UDP 和 TCP 的 38311 端口 以及 TCP 的 8801 端口
+### 1.2 System Configuration
+  - System data disk: /data directory is the mount point of the system data disk
+  - Firewall: The firewall needs to open port 38311 of UDP and TCP and port 8801 of TCP
 
-## 2. 安装部署
+## 2. Installation and deployment
 
-### 2.1 创建工作目录并输入
+### 2.1 Create a working directory and enter it
 
 ```
 mkdir -p newchain && cd newchain
 ```
 
-### 2.2 获取安装脚本程序`newchain.sh`并运行
+### 2.2 Fetch the `newchain.sh` script run it
 
-主网:
+For Mainnet:
 
 ```
 curl -L https://release.cloud.diynova.com/newton/newchain-deploy/mainnet/newchain.sh | sudo bash
 ```
 
-测试网:
+For testnet:
 
 ```
 curl -L https://release.cloud.diynova.com/newton/newchain-deploy/testnet/newchain.sh | sudo bash
 ```
 
-### 2.3 查看NewChain服务日志
+
+### 2.3 View NewChain logs
 
 ```
 sudo supervisorctl tail -f newchain stderr
 ```
 
-## 3. 使用NewChain服务
+## 3. Use NewChain
 
-- NewChain对外服务端口为 8801 端口，HTTP协议，可以作为RPC接口在NewChain SDK中使用。
+- NewChain's external service port is port 8801, HTTP protocol, which can be used as an RPC interface in NewChain SDK.
 
-## 4. 运维相关操作
+## 4. Operation and maintenance related operations
 
-- 启动服务：
+- Start NewChain:
 
 ```
 sudo supervisorctl start newchain
 ```
 
-- 停止服务：
+- Stop NewChain：
 
 ```
 sudo supervisorctl stop newchain
