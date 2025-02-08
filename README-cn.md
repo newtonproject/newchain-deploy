@@ -30,7 +30,7 @@ mkdir -p newchain && cd newchain
 ```
 git clone https://github.com/newtonproject/newchain-deploy
 cd newchain-deploy
-make main
+make
 cd build/mainnet
 sudo bash newchain.sh
 ```
