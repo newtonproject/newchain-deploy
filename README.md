@@ -27,7 +27,6 @@ mkdir -p newchain && cd newchain
 
 For Mainnet:
 
-
 ```
 git clone https://github.com/newtonproject/newchain-deploy
 cd newchain-deploy
@@ -36,6 +35,7 @@ cd build/mainnet
 sudo bash newchain.sh
 ```
 
+for Testnet, `cd build/testnet && sudo bash newchain.sh`
 
 ### 2.3 View NewChain logs
 
