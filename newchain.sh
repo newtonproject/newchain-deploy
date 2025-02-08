@@ -170,7 +170,7 @@ function download_geth_bin() {
   }
 }
 
-curl --silent -L "https://github.com/newtonproject/newchain/releases/download/${newchain_version}/geth-${newchain_version}.sha256" -o "${file}.sha256"
+curl --silent -L "https://github.com/newtonproject/newchain/releases/download/${newchain_version}/${geth_file}.sha256" -o "${geth_file}.sha256"
 # TODO: add gpg
 if test -f "$geth_file"; then
   sha256sum_res=$(shasum -a 256 -c "${geth_file}.sha256" | awk '{print $2}')
@@ -285,7 +285,7 @@ if [[ ! -f $newchain_network_deploy_file ]]; then
     color "31" "No file found, please run 'make' first."
     exit 1
 fi
-color "31" "NewChain installation package is up to date."
+color "32" "NewChain installation package is up to date."
 
 color "37" "Trying to the installation file..."
 # TODO: add gpg
