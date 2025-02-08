@@ -28,14 +28,14 @@ mkdir -p newchain && cd newchain
 主网:
 
 ```
-curl -L https://release.cloud.diynova.com/newton/newchain-deploy/mainnet/newchain.sh | sudo bash
+git clone https://github.com/newtonproject/newchain-deploy
+cd newchain-deploy
+make
+cd build/mainnet
+sudo bash newchain.sh
 ```
 
-测试网:
-
-```
-curl -L https://release.cloud.diynova.com/newton/newchain-deploy/testnet/newchain.sh | sudo bash
-```
+针对测试网，`cd build/testnet && sudo bash newchain.sh`
 
 ### 2.3 查看NewChain服务日志
 

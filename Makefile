@@ -17,18 +17,18 @@ endif
 
 
 all:	main test
-	@echo "${VERSION}: copy files under './build' to release server."
+	@echo "${VERSION}: files under './build'."
 
 main:
 	echo ${VERSION}
 	bash build.sh ${VERSION} "mainnet"
 	@echo "Done mainnet building."
-	@echo "${VERSION}: copy files under './build/mainnet' to mainnet release server."
+	@echo "${VERSION}: run 'cd ./build/mainnet && sudo bash newchain.sh' to install mainnet."
 
 test:
 	bash build.sh ${VERSION} "testnet"
 	@echo "Done testnet building."
-	@echo "${VERSION}: copy files under './build/testnet' to testnet release server."
+	@echo "${VERSION}: run 'cd ./build/testnet && sudo bash newchain.sh' to install testnet."
 
 clean:
 	rm -r build/
