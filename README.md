@@ -27,14 +27,13 @@ mkdir -p newchain && cd newchain
 
 For Mainnet:
 
-```
-curl -L https://release.cloud.diynova.com/newton/newchain-deploy/mainnet/newchain.sh | sudo bash
-```
-
-For testnet:
 
 ```
-curl -L https://release.cloud.diynova.com/newton/newchain-deploy/testnet/newchain.sh | sudo bash
+git clone https://github.com/newtonproject/newchain-deploy
+cd newchain-deploy
+make main
+cd build/mainnet
+sudo bash newchain.sh
 ```
 
 

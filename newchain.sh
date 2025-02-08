@@ -132,12 +132,10 @@ function get_newchain_version() {
     else
         # Find the latest NewChain version available for download.
         readonly reason="automatically selected latest available version"
-        newchain_version_url="${download_rooturl}/newton/newchain/latest.txt"
+        newchain_version="$(curl -s "https://api.github.com/repos/newtonproject/newchain/releases/latest" | grep '"tag_name":' | awk -F '"' '{print $4}')" || (color "31" "Get NewChain latest version error." && exit 1)
         if [[ "$networkname" == "testnet" ]]; then
-          newchain_version_url="${download_rooturl}/newton/newchain/latest-testnet.txt"
+          newchain_version="$(curl -s "https://api.github.com/repos/newtonproject/newchain/tags" | grep '"name":' | head -n 1 | awk -F '"' '{print $4}')" || (color "31" "Get NewChain latest version error." && exit 1)
         fi
-        color '' "Trying get newchain version from url $newchain_version_url"
-        newchain_version=$(curl -f -s "${newchain_version_url}") || (color "31" "Get NewChain latest version error." && exit 1)
         readonly newchain_version
     fi
 }
@@ -163,15 +161,15 @@ fi
 file="geth"
 function download_geth_bin() {
   color "34" "Downloading NewChain binary@${newchain_version} to ${file} (${reason})"
-  color "33" "${download_rooturl}/newton/newchain/${newchain_version}/${system}/${file}"
-  curl -L "${download_rooturl}/newton/newchain/${newchain_version}/${system}/${file}" -o $file || {
+  github_url="https://github.com/newtonproject/newchain/releases/download/${newchain_version}/geth-${newchain_version}"
+  color "33" "Downloading from ${github_url}"
+  curl -L "${github_url}" -o "${file}" || {
     color "31" "Failed to download the NewChain binary."
     exit 1
   }
 }
 
-curl --silent -L "${download_rooturl}/newton/newchain/${newchain_version}/${system}/${file}.sha256" -o "${file}.sha256"
-#curl --silent -L "${download_rooturl}/newton/newchain/${newchain_version}/${system}/${file}.sig" -o "${file}.sig"
+curl --silent -L "https://github.com/newtonproject/newchain/releases/download/${newchain_version}/geth-${newchain_version}.sha256" -o "${file}.sha256"
 # TODO: add gpg
 if test -f "$file"; then
   sha256sum_res=$(shasum -a 256 -c "${file}.sha256" | awk '{print $2}')
