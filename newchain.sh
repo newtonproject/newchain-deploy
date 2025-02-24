@@ -190,9 +190,8 @@ else
   exit 1
 fi
 
-mv $geth_file $file
-chmod +x $file
-cp $file /data/newchain/${networkname}/bin/${newchian_network_file}
+chmod +x $geth_file
+cp $geth_file /data/newchain/${networkname}/bin/${newchian_network_file}
 ln -sf "${newchian_network_file}" /data/newchain/${networkname}/bin/geth || {
   color "31" "Failed to link geth to $newchian_network_file."
   exit 1
@@ -247,7 +246,7 @@ curl --silent -L "https://github.com/newtonproject/newchain-guard/releases/downl
 if test -f "$guard_file"; then
   sha256sum_res=$(shasum -a 256 -c "${guard_file}.sha256" | awk '{print $2}')
   if [ "$sha256sum_res" == "OK" ]; then
-      color "32" "Verify $file $sha256sum_res, checksum match."
+      color "32" "Verify $guard_file $sha256sum_res, checksum match."
   else
     download_guard_bin
   fi
