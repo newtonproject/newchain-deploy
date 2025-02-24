@@ -62,8 +62,6 @@ fi
 color "32" "Current NewChain network is ${networkname}"
 
 
-download_rooturl="https://release.cloud.diynova.com"
-
 ################## system info ##################
 color "37" "Trying to check system info..."
 mkdir -p /data/newchain/${networkname}
@@ -192,9 +190,8 @@ else
   exit 1
 fi
 
-mv $geth_file $file
-chmod +x $file
-cp $file /data/newchain/${networkname}/bin/${newchian_network_file}
+chmod +x $geth_file
+cp $geth_file /data/newchain/${networkname}/bin/${newchian_network_file}
 ln -sf "${newchian_network_file}" /data/newchain/${networkname}/bin/geth || {
   color "31" "Failed to link geth to $newchian_network_file."
   exit 1
@@ -211,9 +208,7 @@ function get_newchain_guard_version() {
     else
         # Find the latest NewChain Guard version available for download.
         readonly guard_reason="automatically selected latest available version"
-        newchain_guard_version_url="${download_rooturl}/newton/NewChainGuard/latest.txt"
-        color '' "Trying get newchain guard version from url $newchain_guard_version_url"
-        newchain_guard_version=$(curl -f -s "${newchain_guard_version_url}") || (color "31" "Get NewChain Guard latest version error." && exit 1)
+        newchain_guard_version="$(curl -s "https://api.github.com/repos/newtonproject/newchain-guard/releases/latest" | grep '"tag_name":' | awk -F '"' '{print $4}')" || (color "31" "Get NewChain Guard latest version error." && exit 1)
         readonly newchain_guard_version
     fi
 }
@@ -236,21 +231,22 @@ if [[ -f /data/newchain/${networkname}/bin/${newchian_guard_network_file} ]]; th
     # exit 0 # not now
 fi
 
-guard_file="NewChainGuard"
+guard_file="newchain-guard-${newchain_guard_version}"
 function download_guard_bin() {
   color "34" "Downloading NewChainGuard@${newchain_guard_version} binary to ${guard_file}"
-  color "33" "${download_rooturl}/newton/NewChainGuard/${newchain_guard_version}/${system}/${guard_file}"
-  curl -L "${download_rooturl}/newton/NewChainGuard/${newchain_guard_version}/${system}/${guard_file}" -o $guard_file || {
+  github_url="https://github.com/newtonproject/newchain-guard/releases/download/${newchain_guard_version}/${guard_file}"
+  color "33" "Downloading from ${github_url}"
+  curl -L "${github_url}" -o $guard_file || {
     color "31" "Failed to download the NewChain Guard binary."
     exit 1
   }
 }
 
-curl --silent -L "${download_rooturl}/newton/NewChainGuard/${newchain_guard_version}/${system}/${guard_file}.sha256" -o "${guard_file}.sha256"
+curl --silent -L "https://github.com/newtonproject/newchain-guard/releases/download/${newchain_guard_version}/${guard_file}.sha256" -o "${guard_file}.sha256"
 if test -f "$guard_file"; then
   sha256sum_res=$(shasum -a 256 -c "${guard_file}.sha256" | awk '{print $2}')
   if [ "$sha256sum_res" == "OK" ]; then
-      color "32" "Verify $file $sha256sum_res, checksum match."
+      color "32" "Verify $guard_file $sha256sum_res, checksum match."
   else
     download_guard_bin
   fi
