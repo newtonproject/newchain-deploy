@@ -9,11 +9,12 @@
   - Storage: 200GB available space SSD
   - Internet: Public IP
 
-For server requirements, please refer to AWS m5a.large or Alibaba Cloud ecs.t5
+For server requirements, please refer to AWS r7a.large or r7i.large.
 
 ### 1.2 System Configuration
   - System data disk: /data directory is the mount point of the system data disk
-  - Firewall: The firewall needs to open port 38311 of UDP and TCP and port 8801 of TCP
+  - Firewall: The firewall needs to open port 38311 of UDP and TCP, 8801 of TCP.
+  - Firewall: Mining node should open port 38311 of UDP and TCP.
 
 ## 2. Installation and deployment
 
