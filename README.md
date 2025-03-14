@@ -3,7 +3,7 @@
 ## 1. System requirements
 
 ### 1.1 Recommended specifications
-  - System OS: Ubuntu 24.04 LTS 64-bit
+  - System OS: Ubuntu 24.04 LTS x86_64
   - Processor: 2-core CPU
   - Memory: 16GB RAM
   - Storage: 200GB available space SSD
