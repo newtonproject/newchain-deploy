@@ -26,6 +26,9 @@ else
 fi
 color "32" "Current NewChain network is ${networkname}"
 
+current_user="${SUDO_USER:-$(whoami)}"
+color "32" "Current user is $current_user"
+
 if [[ $(/data/newchain/${networkname}/bin/geth attach /data/newchain/${networkname}/nodedata/geth.ipc --exec eth.syncing) != "false" ]]; then
   color "31" "Please wait until your node synchronization is complete"
   exit 0
@@ -58,9 +61,10 @@ if [[ ${address} != 0x* || ${#address} < 42 ]]; then
     exit 0
   fi
   echo ${password0} > /data/newchain/${networkname}/password.txt
+  chown $current_user:$current_user /data/newchain/${networkname}/password.txt
 
   # /data/newchain/${networkname}/bin/geth --config /data/newchain/${networkname}/conf/node.toml account new --password /data/newchain/${networkname}/password.txt
-  address=`/data/newchain/${networkname}/bin/geth --config /data/newchain/${networkname}/conf/node.toml account new --password /data/newchain/${networkname}/password.txt | grep "Public address" | awk '{print $6}'`
+  address=$(sudo -u ${current_user} /data/newchain/${networkname}/bin/geth --config /data/newchain/${networkname}/conf/node.toml account new --password /data/newchain/${networkname}/password.txt | grep "Public address" | awk '{print $6}')
   echo "you miner address is: |${address}|"
   if [[ ${address} != 0x* || ${#address} < 42 ]]; then
     color "31" "address len error"
